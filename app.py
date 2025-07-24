@@ -87,17 +87,9 @@ def calculate_yield_metrics(stock_data, symbol):
     # Current yield
     current_yield = (annual_dividend / current_price) * 100 if current_price > 0 else 0
     
-    # Yield to call (simplified - assuming 5 year call option at par)
-    years_to_call = 5
-    if current_price != par_value:
-        ytc = ((annual_dividend + (par_value - current_price) / years_to_call) / current_price) * 100
-    else:
-        ytc = current_yield
-    
     return {
         'current_price': current_price,
         'current_yield': current_yield,
-        'ytc': ytc,
         'annual_dividend': annual_dividend,
         'par_value': par_value
     }
@@ -171,7 +163,6 @@ def main_dashboard():
                         st.write(f"**Par Value:** ${metrics['par_value']:.2f}")
                         st.write(f"**Annual Dividend:** ${metrics['annual_dividend']:.2f}")
                         st.write(f"**Current Yield:** {metrics['current_yield']:.2f}%")
-                        st.write(f"**Yield to Call:** {metrics['ytc']:.2f}%")
                 else:
                     st.error(f"❌ Unable to calculate metrics for {symbol}")
             else:
@@ -184,10 +175,9 @@ def main_dashboard():
         # Create yield curve data
         symbols = list(yield_data.keys())
         current_yields = [yield_data[symbol]['current_yield'] for symbol in symbols]
-        ytc_yields = [yield_data[symbol]['ytc'] for symbol in symbols]
         prices = [yield_data[symbol]['current_price'] for symbol in symbols]
         
-        # Create subplot with secondary y-axis
+        # Create yield curve chart
         fig = go.Figure()
         
         # Current Yield line
@@ -200,20 +190,10 @@ def main_dashboard():
             marker=dict(size=10)
         ))
         
-        # Yield to Call line
-        fig.add_trace(go.Scatter(
-            x=symbols,
-            y=ytc_yields,
-            mode='lines+markers',
-            name='Yield to Call (%)',
-            line=dict(color='#ff7f0e', width=3),
-            marker=dict(size=10)
-        ))
-        
         fig.update_layout(
-            title="MSTR Preferred Stock Yield Curve",
+            title="MSTR Preferred Stock Current Yield Curve",
             xaxis_title="Preferred Stock Symbol",
-            yaxis_title="Yield (%)",
+            yaxis_title="Current Yield (%)",
             hovermode='x unified',
             height=500,
             showlegend=True,
@@ -290,7 +270,6 @@ def main_dashboard():
                 'Par Value': f"${metrics['par_value']:.2f}",
                 'Annual Dividend': f"${metrics['annual_dividend']:.2f}",
                 'Current Yield': f"{metrics['current_yield']:.2f}%",
-                'Yield to Call': f"{metrics['ytc']:.2f}%",
                 'Premium/Discount': f"{((metrics['current_price'] / metrics['par_value'] - 1) * 100):.2f}%"
             })
         
