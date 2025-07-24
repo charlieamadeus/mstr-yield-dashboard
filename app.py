@@ -72,16 +72,17 @@ def calculate_yield_metrics(stock_data, symbol):
     
     current_price = stock_data['Close'].iloc[-1]
     
-    # Preferred stock dividend yields (these are typical rates - in practice you'd get from financials)
-    dividend_rates = {
-        'STRK': 6.125,  # 6.125%
-        'STRF': 0.750,  # 0.750%
-        'STRD': 0.875   # 0.875%
+    # MSTR Preferred stock dividend rates and par values (verified from company filings)
+    stock_info = {
+        'STRK': {'rate': 8.0, 'par': 100.0},   # 8% on $100 par = $8.00 annual
+        'STRF': {'rate': 10.0, 'par': 100.0},  # 10% on $100 par = $10.00 annual  
+        'STRD': {'rate': 10.0, 'par': 100.0}   # 10% on $100 par = $10.00 annual
     }
     
-    # Assuming $25 par value (typical for preferred stocks)
-    par_value = 25.0
-    annual_dividend = par_value * (dividend_rates.get(symbol, 0) / 100)
+    # Get par value and rate for this symbol
+    par_value = stock_info.get(symbol, {}).get('par', 100.0)
+    dividend_rate = stock_info.get(symbol, {}).get('rate', 0.0)
+    annual_dividend = par_value * (dividend_rate / 100)
     
     # Current yield
     current_yield = (annual_dividend / current_price) * 100 if current_price > 0 else 0
@@ -235,8 +236,8 @@ def main_dashboard():
         ))
         
         # Add par value line
-        price_fig.add_hline(y=25, line_dash="dash", line_color="red", 
-                           annotation_text="Par Value ($25)")
+        price_fig.add_hline(y=100, line_dash="dash", line_color="red", 
+                           annotation_text="Par Value ($100)")
         
         price_fig.update_layout(
             title="Current Prices vs Par Value",
