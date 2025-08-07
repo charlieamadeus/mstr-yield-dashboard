@@ -160,7 +160,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<h1 class="main-header">🏦 MSTR Preferred Stock Yield Curve Dashboard</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header">📊 MicroStrategy Preferred Stock Yield Dashboard</h1>', unsafe_allow_html=True)
 
 # Sidebar for controls
 st.sidebar.header("⚙️ Dashboard Controls")
@@ -284,7 +284,7 @@ def main_dashboard():
         stock_data = fetch_stock_data(list(PREFERRED_STOCKS.keys()), period=data_period)
     
     # Current metrics row
-    st.subheader("📈 Current Yield Metrics")
+    st.markdown('<h2 class="section-header">📈 Current Yield Metrics</h2>', unsafe_allow_html=True)
     
     cols = st.columns(len(PREFERRED_STOCKS))
     yield_data = {}
@@ -296,16 +296,12 @@ def main_dashboard():
                 if metrics:
                     yield_data[symbol] = metrics
                     
-                    # Use improved styling for better visibility
+                    # Enhanced metric cards with beautiful styling
                     st.markdown(f"""
-                    <div style="background-color: white; padding: 15px; border-radius: 10px; border: 2px solid #1f77b4; margin: 5px 0;">
-                        <h4 style="color: #1f77b4; margin: 0; font-weight: bold;">{symbol}</h4>
-                        <p style="color: #262730; font-size: 1.2em; font-weight: bold; margin: 5px 0;">
-                            Price: ${metrics['current_price']:.2f}
-                        </p>
-                        <p style="color: #2ca02c; font-size: 1.1em; font-weight: bold; margin: 5px 0;">
-                            Yield: {metrics['current_yield']:.2f}%
-                        </p>
+                    <div class="metric-card">
+                        <div class="metric-symbol">{symbol}</div>
+                        <div class="metric-price">${metrics['current_price']:.2f}</div>
+                        <div class="metric-yield">{metrics['current_yield']:.2f}% Yield</div>
                     </div>
                     """, unsafe_allow_html=True)
                     
@@ -321,7 +317,7 @@ def main_dashboard():
                 st.error(f"❌ No data available for {symbol}")
     
     # Yield Curve Chart
-    st.subheader("📊 Yield Curve Visualization")
+    st.markdown('<h2 class="section-header">📊 Yield Curve Visualization</h2>', unsafe_allow_html=True)
     
     if yield_data:
         # Create yield curve data
@@ -346,19 +342,22 @@ def main_dashboard():
         
         fig.update_layout(
             title="MSTR Preferred Stock Current Yield Curve",
-            xaxis_title="Preferred Stock Symbol",
+            xaxis_title="Preferred Stock Symbol (Ordered by Duration)",
             yaxis_title="Current Yield (%)",
             hovermode='x unified',
             height=500,
             showlegend=True,
             template="plotly_white",
-            font=dict(color="black")
+            font=dict(color="black", family="Inter"),
+            title_font=dict(size=20, color="#1e293b"),
+            plot_bgcolor='rgba(248, 250, 252, 0.8)',
+            paper_bgcolor='rgba(255, 255, 255, 0.9)'
         )
         
         st.plotly_chart(fig, use_container_width=True)
         
         # Price comparison chart
-        st.subheader("💰 Price Comparison")
+        st.markdown('<h2 class="section-header">💰 Price Comparison</h2>', unsafe_allow_html=True)
         
         price_fig = go.Figure()
         price_fig.add_trace(go.Bar(
@@ -376,17 +375,20 @@ def main_dashboard():
         
         price_fig.update_layout(
             title="Current Prices vs Par Value",
-            xaxis_title="Preferred Stock Symbol",
+            xaxis_title="Preferred Stock Symbol (Ordered by Duration)",
             yaxis_title="Price ($)",
             height=400,
             template="plotly_white",
-            font=dict(color="black")
+            font=dict(color="black", family="Inter"),
+            title_font=dict(size=18, color="#1e293b"),
+            plot_bgcolor='rgba(248, 250, 252, 0.8)',
+            paper_bgcolor='rgba(255, 255, 255, 0.9)'
         )
         
         st.plotly_chart(price_fig, use_container_width=True)
     
     # Historical yield charts - Changed from price to yield history
-    st.subheader("📈 Historical Yield Trends")
+    st.markdown('<h2 class="section-header">📈 Historical Yield Trends</h2>', unsafe_allow_html=True)
     
     if stock_data:
         fig_hist = go.Figure()
@@ -411,52 +413,21 @@ def main_dashboard():
             hovermode='x unified',
             height=500,
             template="plotly_white",
-            font=dict(color="black")
+            font=dict(color="black", family="Inter"),
+            title_font=dict(size=18, color="#1e293b"),
+            plot_bgcolor='rgba(248, 250, 252, 0.8)',
+            paper_bgcolor='rgba(255, 255, 255, 0.9)'
         )
         
         st.plotly_chart(fig_hist, use_container_width=True)
     
-    # Data table with enhanced visibility
-    st.subheader("📋 Detailed Metrics Table")
-    
-    if yield_data:
-        table_data = []
-        for symbol, metrics in yield_data.items():
-            table_data.append({
-                'Symbol': symbol,
-                'Name': PREFERRED_STOCKS[symbol],
-                'Current Price': f"${metrics['current_price']:.2f}",
-                'Par Value': f"${metrics['par_value']:.2f}",
-                'Annual Dividend': f"${metrics['annual_dividend']:.2f}",
-                'Current Yield': f"{metrics['current_yield']:.2f}%",
-                'Premium/Discount': f"{((metrics['current_price'] / metrics['par_value'] - 1) * 100):.2f}%"
-            })
-        
-        df_table = pd.DataFrame(table_data)
-        
-        # Style the dataframe for better visibility
-        st.markdown("""
-        <style>
-        .dataframe {
-            font-size: 14px !important;
-            color: black !important;
-        }
-        .dataframe th {
-            background-color: #1f77b4 !important;
-            color: white !important;
-            font-weight: bold !important;
-        }
-        .dataframe td {
-            background-color: white !important;
-            color: black !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        st.dataframe(df_table, use_container_width=True)
-    
-    # Last update timestamp
-    st.sidebar.info(f"🕐 Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    # Last update timestamp with enhanced styling
+    st.sidebar.markdown(f"""
+    <div class="sidebar-info">
+        🕐 <strong>Last Updated</strong><br>
+        {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    </div>
+    """, unsafe_allow_html=True)
 
 # Auto-refresh logic
 if auto_refresh:
@@ -475,11 +446,12 @@ if auto_refresh:
 else:
     main_dashboard()
 
-# Footer
+# Footer with enhanced styling
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; color: #666; font-size: 0.8em;'>
-    💡 This dashboard provides real-time yield curve analysis for MSTR preferred stocks.<br>
-    Data sourced from Yahoo Finance. For investment decisions, please consult professional financial advice.
+<div style='text-align: center; color: #64748b; font-size: 0.9em; font-family: Inter, sans-serif; padding: 20px 0; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-radius: 10px; margin-top: 30px;'>
+    💡 <strong>Professional Yield Analysis Dashboard</strong><br>
+    Real-time yield curve analysis for MicroStrategy preferred stocks ordered by duration<br>
+    <small>Data sourced from Yahoo Finance • For investment decisions, consult professional financial advice</small>
 </div>
 """, unsafe_allow_html=True)
