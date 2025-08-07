@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling and improved visibility
 st.markdown("""
 <style>
     .main-header {
@@ -37,6 +37,22 @@ st.markdown("""
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+    .stMetric > div {
+        color: #262730 !important;
+    }
+    .stMetric label {
+        color: #262730 !important;
+        font-weight: bold !important;
+    }
+    .stMetric .metric-value {
+        color: #1f77b4 !important;
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+    }
+    .stMetric .metric-delta {
+        color: #2ca02c !important;
+        font-weight: bold !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -46,11 +62,12 @@ st.markdown('<h1 class="main-header">🏦 MSTR Preferred Stock Yield Curve Dashb
 # Sidebar for controls
 st.sidebar.header("⚙️ Dashboard Controls")
 
-# MSTR Preferred Stock symbols
+# MSTR Preferred Stock symbols - Updated to include STRC
 PREFERRED_STOCKS = {
     'STRK': 'MicroStrategy Inc. 6.125% Pfd Stock Series A',
     'STRF': 'MicroStrategy Inc. 0.750% Pfd Stock Series B', 
-    'STRD': 'MicroStrategy Inc. 0.875% Pfd Stock Series C'
+    'STRD': 'MicroStrategy Inc. 0.875% Pfd Stock Series C',
+    'STRC': 'MicroStrategy Inc. 6.75% Pfd Stock Series D'
 }
 
 # Auto-refresh toggle
@@ -72,11 +89,12 @@ def calculate_yield_metrics(stock_data, symbol):
     
     current_price = stock_data['Close'].iloc[-1]
     
-    # MSTR Preferred stock dividend rates and par values (verified from company filings)
+    # MSTR Preferred stock dividend rates and par values (updated to include STRC)
     stock_info = {
         'STRK': {'rate': 8.0, 'par': 100.0},   # 8% on $100 par = $8.00 annual
         'STRF': {'rate': 10.0, 'par': 100.0},  # 10% on $100 par = $10.00 annual  
-        'STRD': {'rate': 10.0, 'par': 100.0}   # 10% on $100 par = $10.00 annual
+        'STRD': {'rate': 10.0, 'par': 100.0},  # 10% on $100 par = $10.00 annual
+        'STRC': {'rate': 6.75, 'par': 100.0}   # 6.75% on $100 par = $6.75 annual
     }
     
     # Get par value and rate for this symbol
@@ -93,6 +111,30 @@ def calculate_yield_metrics(stock_data, symbol):
         'annual_dividend': annual_dividend,
         'par_value': par_value
     }
+
+# Function to calculate historical yields
+def calculate_historical_yields(stock_data, symbol):
+    """Calculate historical yield data"""
+    if stock_data.empty:
+        return pd.DataFrame()
+    
+    # Stock info for dividend calculations
+    stock_info = {
+        'STRK': {'rate': 8.0, 'par': 100.0},
+        'STRF': {'rate': 10.0, 'par': 100.0},
+        'STRD': {'rate': 10.0, 'par': 100.0},
+        'STRC': {'rate': 6.75, 'par': 100.0}
+    }
+    
+    par_value = stock_info.get(symbol, {}).get('par', 100.0)
+    dividend_rate = stock_info.get(symbol, {}).get('rate', 0.0)
+    annual_dividend = par_value * (dividend_rate / 100)
+    
+    # Calculate historical yields
+    yields = (annual_dividend / stock_data['Close']) * 100
+    yields = yields.replace([np.inf, -np.inf], np.nan).dropna()
+    
+    return yields
 
 # Function to fetch stock data
 @st.cache_data(ttl=30)  # Cache for 30 seconds
@@ -151,11 +193,18 @@ def main_dashboard():
                 if metrics:
                     yield_data[symbol] = metrics
                     
-                    st.metric(
-                        label=f"{symbol}",
-                        value=f"${metrics['current_price']:.2f}",
-                        delta=f"{metrics['current_yield']:.2f}% yield"
-                    )
+                    # Use improved styling for better visibility
+                    st.markdown(f"""
+                    <div style="background-color: white; padding: 15px; border-radius: 10px; border: 2px solid #1f77b4; margin: 5px 0;">
+                        <h4 style="color: #1f77b4; margin: 0; font-weight: bold;">{symbol}</h4>
+                        <p style="color: #262730; font-size: 1.2em; font-weight: bold; margin: 5px 0;">
+                            Price: ${metrics['current_price']:.2f}
+                        </p>
+                        <p style="color: #2ca02c; font-size: 1.1em; font-weight: bold; margin: 5px 0;">
+                            Yield: {metrics['current_yield']:.2f}%
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
                     with st.expander(f"📊 {symbol} Details"):
                         st.write(f"**Full Name:** {name}")
@@ -187,7 +236,9 @@ def main_dashboard():
             mode='lines+markers',
             name='Current Yield (%)',
             line=dict(color='#1f77b4', width=3),
-            marker=dict(size=10)
+            marker=dict(size=12, color='#1f77b4'),
+            text=[f"{y:.2f}%" for y in current_yields],
+            textposition="top center"
         ))
         
         fig.update_layout(
@@ -197,7 +248,8 @@ def main_dashboard():
             hovermode='x unified',
             height=500,
             showlegend=True,
-            template="plotly_white"
+            template="plotly_white",
+            font=dict(color="black")
         )
         
         st.plotly_chart(fig, use_container_width=True)
@@ -224,40 +276,44 @@ def main_dashboard():
             xaxis_title="Preferred Stock Symbol",
             yaxis_title="Price ($)",
             height=400,
-            template="plotly_white"
+            template="plotly_white",
+            font=dict(color="black")
         )
         
         st.plotly_chart(price_fig, use_container_width=True)
     
-    # Historical price charts
-    st.subheader("📈 Historical Price Trends")
+    # Historical yield charts - Changed from price to yield history
+    st.subheader("📈 Historical Yield Trends")
     
     if stock_data:
         fig_hist = go.Figure()
         
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
         for i, (symbol, data) in enumerate(stock_data.items()):
             if not data.empty:
-                fig_hist.add_trace(go.Scatter(
-                    x=data.index,
-                    y=data['Close'],
-                    mode='lines',
-                    name=symbol,
-                    line=dict(color=colors[i % len(colors)], width=2)
-                ))
+                historical_yields = calculate_historical_yields(data, symbol)
+                if not historical_yields.empty:
+                    fig_hist.add_trace(go.Scatter(
+                        x=historical_yields.index,
+                        y=historical_yields.values,
+                        mode='lines',
+                        name=f"{symbol} Yield",
+                        line=dict(color=colors[i % len(colors)], width=2)
+                    ))
         
         fig_hist.update_layout(
-            title=f"Historical Prices ({data_period})",
+            title=f"Historical Yield Trends ({data_period})",
             xaxis_title="Date",
-            yaxis_title="Price ($)",
+            yaxis_title="Yield (%)",
             hovermode='x unified',
             height=500,
-            template="plotly_white"
+            template="plotly_white",
+            font=dict(color="black")
         )
         
         st.plotly_chart(fig_hist, use_container_width=True)
     
-    # Data table
+    # Data table with enhanced visibility
     st.subheader("📋 Detailed Metrics Table")
     
     if yield_data:
@@ -274,6 +330,26 @@ def main_dashboard():
             })
         
         df_table = pd.DataFrame(table_data)
+        
+        # Style the dataframe for better visibility
+        st.markdown("""
+        <style>
+        .dataframe {
+            font-size: 14px !important;
+            color: black !important;
+        }
+        .dataframe th {
+            background-color: #1f77b4 !important;
+            color: white !important;
+            font-weight: bold !important;
+        }
+        .dataframe td {
+            background-color: white !important;
+            color: black !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         st.dataframe(df_table, use_container_width=True)
     
     # Last update timestamp
