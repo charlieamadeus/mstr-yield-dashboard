@@ -15,43 +15,146 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling and improved visibility
+# Custom CSS for enhanced styling and visual appeal
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .main {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        margin: 20px;
+        padding: 30px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    }
+    
     .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
+        font-family: 'Inter', sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
-    .metric-container {
-        background-color: #f0f2f6;
-        padding: 20px;
-        border-radius: 10px;
+    
+    .metric-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        padding: 24px;
         margin: 10px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .stMetric {
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-symbol {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+    
+    .metric-price {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #3b82f6;
+        margin: 5px 0;
+    }
+    
+    .metric-yield {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #10b981;
+        margin: 5px 0;
+    }
+    
+    .stSelectbox > div > div {
         background-color: white;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px;
     }
-    .stMetric > div {
-        color: #262730 !important;
+    
+    .stCheckbox > label {
+        font-weight: 500;
+        color: #374151;
     }
-    .stMetric label {
-        color: #262730 !important;
-        font-weight: bold !important;
+    
+    .stSlider > div > div {
+        color: #374151;
     }
-    .stMetric .metric-value {
-        color: #1f77b4 !important;
-        font-size: 1.5rem !important;
-        font-weight: bold !important;
+    
+    .section-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 30px 0 20px 0;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #e2e8f0;
     }
-    .stMetric .metric-delta {
-        color: #2ca02c !important;
-        font-weight: bold !important;
+    
+    .stExpander {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin: 5px 0;
+    }
+    
+    .data-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    
+    .dataframe {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 14px !important;
+        color: #374151 !important;
+    }
+    
+    .dataframe th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        padding: 12px !important;
+        text-align: center !important;
+    }
+    
+    .dataframe td {
+        background-color: white !important;
+        color: #374151 !important;
+        padding: 10px !important;
+        text-align: center !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+    
+    .dataframe tr:hover td {
+        background-color: #f9fafb !important;
+    }
+    
+    .sidebar-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
     }
 </style>
 """, unsafe_allow_html=True)
