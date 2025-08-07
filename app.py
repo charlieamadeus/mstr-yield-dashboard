@@ -62,12 +62,12 @@ st.markdown('<h1 class="main-header">🏦 MSTR Preferred Stock Yield Curve Dashb
 # Sidebar for controls
 st.sidebar.header("⚙️ Dashboard Controls")
 
-# MSTR Preferred Stock symbols - Updated to include STRC
+# MSTR Preferred Stock symbols - Ordered by duration (STRC, STRD, STRF, STRK)
 PREFERRED_STOCKS = {
-    'STRK': 'MicroStrategy Inc. 6.125% Pfd Stock Series A',
-    'STRF': 'MicroStrategy Inc. 0.750% Pfd Stock Series B', 
+    'STRC': 'MicroStrategy Inc. 6.75% Pfd Stock Series D',
     'STRD': 'MicroStrategy Inc. 0.875% Pfd Stock Series C',
-    'STRC': 'MicroStrategy Inc. 6.75% Pfd Stock Series D'
+    'STRF': 'MicroStrategy Inc. 0.750% Pfd Stock Series B', 
+    'STRK': 'MicroStrategy Inc. 6.125% Pfd Stock Series A'
 }
 
 # Auto-refresh toggle
@@ -89,12 +89,12 @@ def calculate_yield_metrics(stock_data, symbol):
     
     current_price = stock_data['Close'].iloc[-1]
     
-    # MSTR Preferred stock dividend rates and par values (updated to include STRC)
+    # MSTR Preferred stock dividend rates and par values (ordered by duration)
     stock_info = {
-        'STRK': {'rate': 8.0, 'par': 100.0},   # 8% on $100 par = $8.00 annual
-        'STRF': {'rate': 10.0, 'par': 100.0},  # 10% on $100 par = $10.00 annual  
-        'STRD': {'rate': 10.0, 'par': 100.0},  # 10% on $100 par = $10.00 annual
-        'STRC': {'rate': 6.75, 'par': 100.0}   # 6.75% on $100 par = $6.75 annual
+        'STRC': {'rate': 9.0, 'par': 100.0},    # $9.00 annual dividend
+        'STRD': {'rate': 10.0, 'par': 100.0},   # 10% on $100 par = $10.00 annual
+        'STRF': {'rate': 10.0, 'par': 100.0},   # 10% on $100 par = $10.00 annual  
+        'STRK': {'rate': 8.0, 'par': 100.0}     # 8% on $100 par = $8.00 annual
     }
     
     # Get par value and rate for this symbol
@@ -118,12 +118,12 @@ def calculate_historical_yields(stock_data, symbol):
     if stock_data.empty:
         return pd.DataFrame()
     
-    # Stock info for dividend calculations
+    # Stock info for dividend calculations (ordered by duration)
     stock_info = {
-        'STRK': {'rate': 8.0, 'par': 100.0},
-        'STRF': {'rate': 10.0, 'par': 100.0},
-        'STRD': {'rate': 10.0, 'par': 100.0},
-        'STRC': {'rate': 6.75, 'par': 100.0}
+        'STRC': {'rate': 9.0, 'par': 100.0},    # $9.00 annual dividend
+        'STRD': {'rate': 10.0, 'par': 100.0},   # 10% on $100 par = $10.00 annual
+        'STRF': {'rate': 10.0, 'par': 100.0},   # 10% on $100 par = $10.00 annual
+        'STRK': {'rate': 8.0, 'par': 100.0}     # 8% on $100 par = $8.00 annual
     }
     
     par_value = stock_info.get(symbol, {}).get('par', 100.0)
