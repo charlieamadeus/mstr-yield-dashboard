@@ -15,152 +15,86 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for enhanced styling and visual appeal
+# Custom CSS for clean, professional styling
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .main {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        margin: 20px;
-        padding: 30px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    }
-    
     .main-header {
-        font-family: 'Inter', sans-serif;
-        font-size: 3rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1e293b;
         text-align: center;
-        margin-bottom: 40px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        text-shadow: none;
     }
     
     .metric-card {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border-radius: 16px;
-        padding: 24px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
         margin: 10px 0;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
     
     .metric-symbol {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 600;
         color: #1e293b;
         margin-bottom: 8px;
     }
     
     .metric-price {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: #3b82f6;
         margin: 5px 0;
     }
     
     .metric-yield {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: #10b981;
         margin: 5px 0;
     }
     
-    .stSelectbox > div > div {
-        background-color: white;
-        border-radius: 8px;
-    }
-    
-    .stCheckbox > label {
-        font-weight: 500;
-        color: #374151;
-    }
-    
-    .stSlider > div > div {
-        color: #374151;
-    }
-    
     .section-header {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 600;
         color: #1e293b;
-        margin: 30px 0 20px 0;
-        padding-bottom: 10px;
-        border-bottom: 3px solid #e2e8f0;
-    }
-    
-    .stExpander {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        margin: 5px 0;
-    }
-    
-    .data-table {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
-    
-    .dataframe {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 14px !important;
-        color: #374151 !important;
+        margin: 25px 0 15px 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e2e8f0;
     }
     
     .dataframe th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background-color: #1e293b !important;
         color: white !important;
         font-weight: 600 !important;
         padding: 12px !important;
-        text-align: center !important;
+        text-align: left !important;
     }
     
     .dataframe td {
         background-color: white !important;
-        color: #374151 !important;
+        color: #1e293b !important;
         padding: 10px !important;
-        text-align: center !important;
         border-bottom: 1px solid #e5e7eb !important;
     }
     
     .dataframe tr:hover td {
-        background-color: #f9fafb !important;
-    }
-    
-    .sidebar-info {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
+        background-color: #f8fafc !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<h1 class="main-header">📊 MicroStrategy Preferred Stock Yield Dashboard</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header">MicroStrategy Preferred Stock Yield Dashboard</h1>', unsafe_allow_html=True)
 
 # Sidebar for controls
 st.sidebar.header("⚙️ Dashboard Controls")
@@ -341,17 +275,15 @@ def main_dashboard():
         ))
         
         fig.update_layout(
-            title="MSTR Preferred Stock Current Yield Curve",
-            xaxis_title="Preferred Stock Symbol (Ordered by Duration)",
+            title="Current Yield Curve",
+            xaxis_title="Symbol (Ordered by Duration)",
             yaxis_title="Current Yield (%)",
             hovermode='x unified',
             height=500,
             showlegend=True,
             template="plotly_white",
-            font=dict(color="black", family="Inter"),
-            title_font=dict(size=20, color="#1e293b"),
-            plot_bgcolor='rgba(248, 250, 252, 0.8)',
-            paper_bgcolor='rgba(255, 255, 255, 0.9)'
+            font=dict(color="#1e293b"),
+            title_font=dict(size=16, color="#1e293b")
         )
         
         st.plotly_chart(fig, use_container_width=True)
@@ -375,14 +307,12 @@ def main_dashboard():
         
         price_fig.update_layout(
             title="Current Prices vs Par Value",
-            xaxis_title="Preferred Stock Symbol (Ordered by Duration)",
+            xaxis_title="Symbol (Ordered by Duration)",
             yaxis_title="Price ($)",
             height=400,
             template="plotly_white",
-            font=dict(color="black", family="Inter"),
-            title_font=dict(size=18, color="#1e293b"),
-            plot_bgcolor='rgba(248, 250, 252, 0.8)',
-            paper_bgcolor='rgba(255, 255, 255, 0.9)'
+            font=dict(color="#1e293b"),
+            title_font=dict(size=16, color="#1e293b")
         )
         
         st.plotly_chart(price_fig, use_container_width=True)
@@ -413,21 +343,33 @@ def main_dashboard():
             hovermode='x unified',
             height=500,
             template="plotly_white",
-            font=dict(color="black", family="Inter"),
-            title_font=dict(size=18, color="#1e293b"),
-            plot_bgcolor='rgba(248, 250, 252, 0.8)',
-            paper_bgcolor='rgba(255, 255, 255, 0.9)'
+            font=dict(color="#1e293b"),
+            title_font=dict(size=16, color="#1e293b")
         )
         
         st.plotly_chart(fig_hist, use_container_width=True)
     
-    # Last update timestamp with enhanced styling
-    st.sidebar.markdown(f"""
-    <div class="sidebar-info">
-        🕐 <strong>Last Updated</strong><br>
-        {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    </div>
-    """, unsafe_allow_html=True)
+    # Detailed metrics table
+    st.markdown('<h2 class="section-header">📋 Detailed Metrics Table</h2>', unsafe_allow_html=True)
+    
+    if yield_data:
+        table_data = []
+        for symbol, metrics in yield_data.items():
+            table_data.append({
+                'Symbol': symbol,
+                'Name': PREFERRED_STOCKS[symbol],
+                'Current Price': f"${metrics['current_price']:.2f}",
+                'Par Value': f"${metrics['par_value']:.2f}",
+                'Annual Dividend': f"${metrics['annual_dividend']:.2f}",
+                'Current Yield': f"{metrics['current_yield']:.2f}%",
+                'Premium/Discount': f"{((metrics['current_price'] / metrics['par_value'] - 1) * 100):.2f}%"
+            })
+        
+        df_table = pd.DataFrame(table_data)
+        st.dataframe(df_table, use_container_width=True, hide_index=True)
+    
+    # Last update timestamp
+    st.sidebar.info(f"🕐 Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 # Auto-refresh logic
 if auto_refresh:
